@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kitap Arenası</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;font-family:"Poppins","Trebuchet MS",system-ui,sans-serif;color:#fff;
+ background:radial-gradient(circle at 50% 0%,#8a6bff 0%,#3b2a8c 45%,#1b1245 100%);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
+ background-image:radial-gradient(#fff 1.2px,transparent 1.5px);background-size:46px 46px;animation:drift 30s linear infinite}
+@keyframes drift{to{background-position:460px 460px}}
+.wrap{position:relative;max-width:560px;margin:0 auto;padding:14px 14px 40px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.pill{background:rgba(0,0,0,.35);border-radius:99px;padding:6px 12px;font-weight:700;font-size:.95rem;display:flex;gap:6px;align-items:center}
+.logo{font-size:1.5rem;font-weight:900;letter-spacing:.5px;text-shadow:0 4px 0 #1b1245,0 0 18px rgba(255,220,90,.5);color:#ffd84d;text-align:center;margin:6px 0 2px}
+.tag{text-align:center;opacity:.85;font-size:.9rem;margin-bottom:16px}
+.arena{position:relative;border-radius:22px;padding:18px 18px 16px;margin:12px 0;box-shadow:0 8px 0 rgba(0,0,0,.35);cursor:pointer;border:0;width:100%;text-align:left;color:#fff;font-family:inherit;transition:transform .08s}
+.arena:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.arena h2{margin:0 0 2px;font-size:1.35rem;font-weight:900}
+.arena p{margin:0;font-size:.9rem;opacity:.92}
+.arena .faces{font-size:2rem;letter-spacing:6px;margin-top:8px}
+.arena .best{position:absolute;right:14px;top:14px;background:rgba(0,0,0,.28);border-radius:10px;padding:4px 9px;font-size:.85rem;font-weight:700}
+.a1{background:linear-gradient(135deg,#ff9b3d,#e8612a);}
+.a2{background:linear-gradient(135deg,#3fd0ff,#2a7de1);}
+.a3{background:linear-gradient(135deg,#ff5fa2,#a04bff);}
+.hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:6px;flex-wrap:wrap}
+.hearts{font-size:1.25rem;letter-spacing:2px}
+.stage{background:rgba(255,255,255,.1);border-radius:24px;padding:18px 16px 20px;position:relative;min-height:360px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.25)}
+.kind{display:inline-block;background:rgba(0,0,0,.35);border-radius:10px;padding:3px 10px;font-size:.78rem;font-weight:700;opacity:.9}
+.avatar{width:112px;height:112px;margin:8px auto 4px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c2,#ffcf4d 60%,#e39b16);
+ display:flex;align-items:center;justify-content:center;font-size:3.6rem;box-shadow:0 7px 0 rgba(0,0,0,.3),0 0 0 6px rgba(255,255,255,.25);animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.avatar.win{animation:jump .6s}
+.avatar.lose{animation:shake .5s}
+@keyframes jump{30%{transform:translateY(-22px) scale(1.1)}}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.prompt{font-size:1.2rem;font-weight:700;text-align:center;line-height:1.4;margin:8px 0 14px;min-height:3em}
+.opts{display:grid;gap:10px}
+.opt{border:0;border-radius:16px;padding:14px 14px;font-size:1.05rem;font-weight:800;color:#2a1d5c;background:#fff;box-shadow:0 6px 0 #c9bfe6;cursor:pointer;font-family:inherit;text-align:center;transition:transform .05s}
+.opt:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 #c9bfe6}
+.opt:disabled{cursor:default}
+.opt.good{background:#5fe08a;box-shadow:0 6px 0 #2b9e55;color:#0c3a1d}
+.opt.badp{background:#ff6b6b;box-shadow:0 6px 0 #b83232;color:#fff}
+.opt.gone{opacity:.15}
+.row{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.btn{border:0;border-radius:14px;padding:12px 18px;font-weight:900;font-size:1rem;color:#fff;background:#ffb020;box-shadow:0 6px 0 #b77200;cursor:pointer;font-family:inherit}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #b77200}
+.btn.blue{background:#3fa9ff;box-shadow:0 6px 0 #1f6fb8}
+.btn.pink{background:#ff5fa2;box-shadow:0 6px 0 #b32f6d}
+.btn.small{font-size:.85rem;padding:8px 12px;box-shadow:0 4px 0 #6d6dbb;background:#7f7ad8}
+.btn:disabled{opacity:.4}
+.hint{margin-top:10px;background:#ffe9a3;color:#4d3300;border-radius:14px;padding:10px 12px;font-weight:700;font-size:.92rem;display:none;line-height:1.4}
+.hint.show{display:block}
+.feed{position:relative;margin:14px 0 0;background:#1f1450;border-radius:16px;padding:12px 14px;display:none;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.feed.show{display:block;animation:up .25s}
+@keyframes up{from{transform:translateY(20px);opacity:0}}
+.feed b{display:block;font-size:1.05rem;margin-bottom:4px}
+.feed .src{font-style:italic;font-size:.9rem;opacity:.95;line-height:1.4}
+.feed .btn{margin-top:10px;width:100%}
+.road{display:flex;justify-content:space-between;align-items:center;margin:14px 6px 0;position:relative}
+.road:before{content:"";position:absolute;left:8px;right:8px;top:50%;height:6px;background:rgba(255,255,255,.2);border-radius:6px;transform:translateY(-50%)}
+.node{width:18px;height:18px;border-radius:50%;background:#2b2166;border:3px solid rgba(255,255,255,.4);position:relative;z-index:1}
+.node.done{background:#ffd84d;border-color:#fff3b0}
+.node.cur{background:#fff;border-color:#ffd84d;transform:scale(1.35)}
+.float{position:absolute;left:50%;top:40%;transform:translateX(-50%);font-size:1.6rem;font-weight:900;color:#ffd84d;text-shadow:0 3px 0 #1b1245;pointer-events:none;animation:fly .9s ease-out forwards}
+@keyframes fly{to{transform:translate(-50%,-70px);opacity:0}}
+.card{background:rgba(255,255,255,.1);border-radius:24px;padding:22px 18px;text-align:center;box-shadow:inset 0 -6px 0 rgba(0,0,0,.25)}
+.card h2{font-size:1.8rem;margin:6px 0;font-weight:900;color:#ffd84d;text-shadow:0 4px 0 #1b1245}
+.stars{font-size:2.4rem;letter-spacing:6px;margin:6px 0}
+.big{font-size:2.2rem;font-weight:900;margin:6px 0}
+.wlist{text-align:left;margin:12px auto 0;max-width:420px;font-size:.92rem;line-height:1.5;opacity:.95}
+.wlist li{margin-bottom:6px}
+.hidden{display:none!important}
+.mute{position:absolute;top:8px;right:8px}
+</style></head>
+<body><div class="wrap">
+
+<div id="menu">
+  <div class="topbar">
+    <div class="pill">🏆 <span id="totalTrophy">0</span></div>
+    <button class="pill" id="muteBtn" style="border:0;color:#fff;cursor:pointer;font-family:inherit">🔊 Ses açık</button>
+  </div>
+  <div class="logo">KİTAP ARENASI</div>
+  <div class="tag">Doğru cevapla kupa topla, kalplerini kaybetme!</div>
+  <button class="arena a1" data-m="safari"><span class="best" id="b-safari">☆☆☆</span><h2>🐒 Safari Arenası</h2><p>On Safari! · 10 savaş</p><div class="faces">🐒🐘🦁🐸</div></button>
+  <button class="arena a2" data-m="career"><span class="best" id="b-career">☆☆☆</span><h2>🌲 Kariyer Parkı</h2><p>Career Day · 12 savaş</p><div class="faces">🩺🤿✈️🔬</div></button>
+  <button class="arena a3" data-m="all"><span class="best" id="b-all">☆☆☆</span><h2>🏟️ Karma Arena</h2><p>İki arena birden · 22 savaş</p><div class="faces">🐘🦁🩺✈️🍳</div></button>
+  <button class="arena" data-m="gen" style="background:linear-gradient(135deg,#7cf0c0,#1fa77a);color:#0b2a1f"><h2>🎲 Sınırsız Arena</h2><p>Her seferinde yeni, rastgele sorular · 10 savaş</p><div class="faces">🎲🐒🩺</div></button>
+  <div class="row"><button class="btn small" id="resetBest">Yıldızları sıfırla</button></div>
+</div>
+
+<div id="battle" class="hidden">
+  <div class="topbar">
+    <button class="btn small" id="leave">← Menü</button>
+    <div class="pill" id="trophyPill">🏆 0</div>
+  </div>
+  <div class="hud"><span class="hearts" id="hearts"></span><span class="pill" id="streak"></span><span class="pill" id="prog"></span></div>
+  <div class="road" id="road"></div>
+  <div class="stage" id="stage" style="margin-top:12px">
+    <span class="kind" id="kind"></span>
+    <div class="avatar" id="avatar"></div>
+    <div class="prompt" id="prompt"></div>
+    <div class="opts" id="opts"></div>
+    <div class="row"><button class="btn blue small" id="hintBtn">💡 İpucu (1 kez)</button></div>
+    <div class="hint" id="hint"></div>
+    <div class="feed" id="feed"><b id="feedT"></b><div class="src" id="feedS"></div><button class="btn" id="next">Devam ➜</button></div>
+  </div>
+</div>
+
+<div id="end" class="hidden">
+  <div class="card" id="endCard"></div>
+</div>
+
+</div>
+<script>
+const DATA = [{"book": "safari", "kind": "C2 · Ne yapıyor?", "q": "The elephant is …", "o": ["drinking water", "climbing a tree", "flying home"], "a": 0, "src": "It is drinking water from the river.", "n": 1, "e": "🐘"}, {"book": "safari", "kind": "C2 · Ne yapıyor?", "q": "The birds are …", "o": ["sleeping", "flying home", "hiding"], "a": 1, "src": "They are flying home to their nest.", "n": 2, "e": "🐦"}, {"book": "safari", "kind": "C2 · Ne yapıyor?", "q": "The frog is …", "o": ["drinking", "climbing", "jumping"], "a": 2, "src": "It is jumping right onto my camera!", "n": 3, "e": "🐸"}, {"book": "safari", "kind": "C2 · Ne yapıyor?", "q": "What is the lion doing?", "o": ["sleeping under a tree", "drinking water", "hiding in the grass"], "a": 0, "src": "Shhh… it is sleeping under a tree.", "n": 4, "e": "🦁"}, {"book": "safari", "kind": "G1 · is mi, are mı?", "q": "The monkey ___ climbing.", "o": ["is", "are"], "a": 0, "src": "It is climbing a tall tree.", "n": 5, "e": "🐒"}, {"book": "safari", "kind": "G1 · is mi, are mı?", "q": "The birds ___ flying home.", "o": ["is", "are"], "a": 1, "src": "They are flying home to their nest.", "n": 6, "e": "🐦"}, {"book": "safari", "kind": "G1 · is mi, are mı?", "q": "Two animals ___ sleeping together.", "o": ["is", "are"], "a": 1, "src": "Two animals are sleeping together.", "n": 7, "e": "🐈"}, {"book": "safari", "kind": "C3 · Hikayeyi hatırla", "q": "What two animals are on the night photo?", "o": ["two monkeys", "a big cat and a little deer", "two birds"], "a": 1, "src": "A big cat and a little deer!", "n": 8, "e": "🌙"}, {"book": "safari", "kind": "C3 · Hikayeyi hatırla", "q": "Why are they sleeping together?", "o": ["to find food", "to keep each other warm", "to play a game"], "a": 1, "src": "They are keeping each other warm.", "n": 9, "e": "📝"}, {"book": "safari", "kind": "C3 · Hikayeyi hatırla", "q": "What do we call it when different animals help each other?", "o": ["a night camera", "an unlikely friendship", "a safari"], "a": 1, "src": "This is called an unlikely friendship.", "n": 10, "e": "🤝"}, {"book": "career", "kind": "C2 · Kim yapar?", "q": "This person flies over the park and counts the elephants.", "o": ["the cook", "the pilot", "the diver"], "a": 1, "src": "A pilot flies over the park.", "n": 11, "e": "🐘"}, {"book": "career", "kind": "C2 · Kim yapar?", "q": "This person studies tiny bugs.", "o": ["the ranger", "the vet", "the scientist"], "a": 2, "src": "She looks at a tiny bug.", "n": 12, "e": "🔬"}, {"book": "career", "kind": "C2 · Kim yapar?", "q": "This person makes food for the workers and the animals.", "o": ["the diver", "the pilot", "the cook"], "a": 2, "src": "I make food for everyone.", "n": 13, "e": "🍳"}, {"book": "career", "kind": "C3 · Hikayeyi hatırla", "q": "Who is working in the animal house at night?", "o": ["the cook", "the pilot", "the vet"], "a": 2, "src": "It is the vet again!", "n": 14, "e": "🌙"}, {"book": "career", "kind": "C4 · Nerede çalışır?", "q": "Where does a diver work?", "o": ["in the sky", "in the forest", "deep in the sea"], "a": 2, "src": "She swims deep down with the turtles and the fish.", "n": 15, "e": "🤿"}, {"book": "career", "kind": "C4 · Nerede çalışır?", "q": "Where does a ranger work?", "o": ["in the kitchen", "in the forest", "in the sky"], "a": 1, "src": "A ranger protects the forest and the animals.", "n": 16, "e": "🌲"}, {"book": "career", "kind": "V1 · Kelime anlamı", "q": "What does a vet do?", "o": ["protects the forest", "helps sick animals", "makes food"], "a": 1, "src": "A vet helps sick animals.", "n": 17, "e": "🩺"}, {"book": "career", "kind": "V2 · Kelimeyi tamamla", "q": "A ______ flies a plane and counts the elephants.", "o": ["diver", "pilot", "ranger"], "a": 1, "src": "He flies high in a small plane.", "n": 18, "e": "🐘"}, {"book": "career", "kind": "V3 · Farklı olan", "q": "Which word is NOT a job?", "o": ["vet", "banana", "pilot", "cook"], "a": 1, "src": "Banana is a fruit, not a job.", "n": 19, "e": "📝"}, {"book": "career", "kind": "G1 · helps mi, help mi?", "q": "A vet ___ sick animals.", "o": ["help", "helps"], "a": 1, "src": "A vet helps sick animals.", "n": 20, "e": "🩺"}, {"book": "career", "kind": "G1 · protect mi, protects mi?", "q": "A ranger ___ the forest.", "o": ["protect", "protects"], "a": 1, "src": "A ranger protects the forest.", "n": 21, "e": "🌲"}, {"book": "career", "kind": "G3 · Doğru soru", "q": "Which question is correct?", "o": ["What do a vet does?", "What does a vet do?", "What is a vet do?"], "a": 1, "src": "What does a vet do?", "n": 22, "e": "📝"}];
+const NAMES = {safari:"Safari Arenası", career:"Kariyer Parkı", all:"Karma Arena", gen:"Sınırsız Arena"};
+let mode="", queue=[], idx=0, hearts=3, trophies=0, streak=0, wrong=[], cur=null, locked=false, hintUsed=false, muted=false, runWrong=[];
+let AC=null;
+
+function $(id){ return document.getElementById(id); }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function show(id){ ["menu","battle","end"].forEach(s=>$(s).classList.toggle("hidden", s!==id)); window.scrollTo(0,0); }
+function save(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function load(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+
+function beep(f,d,type){
+  if(muted) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type||"square"; o.frequency.value=f; g.gain.value=0.07;
+    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+d);
+  }catch(e){}
+}
+
+function stars(n){ return "★".repeat(n)+"☆".repeat(3-n); }
+function menuInit(){
+  let total = Number(load("kitap-arena-trophies")||0);
+  $("totalTrophy").textContent = total;
+  ["safari","career","all"].forEach(m=>{ const s=Number(load("kitap-arena-stars-"+m)||0); $("b-"+m).textContent = stars(s); });
+  $("muteBtn").textContent = muted ? "🔇 Ses kapalı" : "🔊 Ses açık";
+}
+
+document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>start(b.dataset.m));
+$("resetBest").onclick=()=>{ ["safari","career","all"].forEach(m=>{ try{ localStorage.removeItem("kitap-arena-stars-"+m); }catch(e){} }); menuInit(); };
+$("muteBtn").onclick=()=>{ muted=!muted; menuInit(); };
+$("leave").onclick=()=>{ menuInit(); show("menu"); };
+$("next").onclick=()=>{ $("feed").classList.remove("show"); idx++; if(hearts<=0) return lose(); if(idx>=queue.length) return win(); renderQ(); };
+$("hintBtn").onclick=()=>{
+  if(hintUsed||locked) return;
+  hintUsed=true; $("hintBtn").disabled=true;
+  const wrongIdx=[...document.querySelectorAll("#opts .opt")].filter(b=>!b.dataset.correct && !b.disabled);
+  // remove one wrong option
+  const pick=wrongIdx[Math.floor(Math.random()*wrongIdx.length)];
+  if(pick){ pick.classList.add("gone"); pick.disabled=true; }
+  $("hint").textContent="💡 Yanlış şıklardan biri elendi.";
+  $("hint").classList.add("show");
+};
+
+function start(m, retryList){
+  mode=m;
+  const base = retryList || (m==="gen" ? genList(10) : DATA.filter(q=>m==="all"||q.book===m));
+  queue = shuffle(base);
+  idx=0; hearts=3; streak=0; wrong=[]; trophies=0; runWrong=[];
+  show("battle"); renderQ();
+}
+
+function road(){
+  const r=$("road"); r.innerHTML="";
+  const n=queue.length;
+  const step = n>12 ? 1 : 1;
+  for(let i=0;i<n;i++){
+    const d=document.createElement("div");
+    d.className="node" + (i<idx?" done":"") + (i===idx?" cur":"");
+    r.appendChild(d);
+  }
+}
+
+function renderQ(){
+  locked=false; hintUsed=false;
+  cur=queue[idx];
+  $("kind").textContent = cur.kind;
+  $("avatar").textContent = cur.e;
+  $("avatar").className="avatar";
+  $("prompt").textContent = cur.q;
+  $("prog").textContent = (idx+1)+" / "+queue.length;
+  $("trophyPill").textContent = "🏆 "+trophies;
+  $("streak").textContent = streak>=2 ? "🔥 x"+streak : "🔥 "+streak;
+  $("hearts").textContent = "❤️".repeat(hearts)+"🖤".repeat(Math.max(0,3-hearts));
+  $("hintBtn").disabled=false;
+  $("hint").classList.remove("show"); $("hint").textContent="";
+  $("feed").classList.remove("show");
+  const box=$("opts"); box.innerHTML="";
+  shuffle(cur.o.map((_,i)=>i)).forEach(oi=>{
+    const b=document.createElement("button");
+    b.className="opt"; b.textContent=cur.o[oi];
+    if(oi===cur.a) b.dataset.correct="1";
+    b.onclick=()=>answer(b);
+    box.appendChild(b);
+  });
+  road();
+}
+
+function answer(btn){
+  if(locked) return;
+  locked=true;
+  const ok = !!btn.dataset.correct;
+  document.querySelectorAll("#opts .opt").forEach(b=>{ b.disabled=true; if(b.dataset.correct) b.classList.add("good"); });
+  const fb=$("feed");
+  if(ok){
+    streak++;
+    const gain = streak>=2 ? 2 : 1;
+    trophies += gain;
+    btn.classList.add("good");
+    $("avatar").classList.add("win");
+    beep(880,0.12,"square"); setTimeout(()=>beep(1175,0.18,"square"),110);
+    floatText("+"+gain+" 🏆");
+    $("feedT").textContent = "Kral gibi! +"+gain+" 🏆" + (streak>=2 ? " (seri bonusu)" : "");
+  } else {
+    streak=0; hearts--;
+    btn.classList.add("badp");
+    $("avatar").classList.add("lose");
+    beep(180,0.3,"sawtooth");
+    wrong.push(cur); runWrong.push(cur);
+    $("feedT").textContent = "Ah! Doğrusu: "+cur.o[cur.a];
+  }
+  $("feedS").textContent = "📖 Kitaptan: “"+cur.src+"”";
+  $("next").textContent = (hearts<=0) ? "Sonuca bak" : (idx+1>=queue.length ? "Bitir 🏁" : "Devam ➜");
+  fb.classList.add("show");
+  $("hintBtn").disabled=true;
+  $("hearts").textContent = "❤️".repeat(Math.max(0,hearts))+"🖤".repeat(Math.max(0,3-hearts));
+  $("streak").textContent = streak>=2 ? "🔥 x"+streak : "🔥 "+streak;
+  $("trophyPill").textContent = "🏆 "+trophies;
+}
+
+function floatText(t){
+  const f=document.createElement("div");
+  f.className="float"; f.textContent=t;
+  $("stage").appendChild(f);
+  setTimeout(()=>f.remove(),950);
+}
+
+function finishSave(){
+  const prev = Number(load("kitap-arena-trophies")||0);
+  save("kitap-arena-trophies", String(prev+trophies));
+}
+
+function win(){
+  finishSave();
+  const s = hearts>=3 ? 3 : hearts===2 ? 2 : 1;
+  const prevS = Number(load("kitap-arena-stars-"+mode)||0);
+  if(s>prevS) save("kitap-arena-stars-"+mode, String(s));
+  show("end");
+  const hasWrong = runWrong.length>0;
+  $("endCard").innerHTML = "";
+  const h=document.createElement("h2"); h.textContent="Zafer! 🎉"; $("endCard").appendChild(h);
+  const st=document.createElement("div"); st.className="stars"; st.textContent=stars(s); $("endCard").appendChild(st);
+  const t=document.createElement("div"); t.className="big"; t.textContent="🏆 "+trophies+" kupa"; $("endCard").appendChild(t);
+  const p=document.createElement("p"); p.textContent = NAMES[mode]+" tamamlandı. "+(s===3?"Hiç can kaybetmedin!":"Kalplerini koruyarak daha çok yıldız kazanabilirsin.");
+  $("endCard").appendChild(p);
+  if(hasWrong){
+    const l=document.createElement("ul"); l.className="wlist";
+    runWrong.forEach(q=>{ const li=document.createElement("li"); li.textContent=q.q+" → "+q.o[q.a]; l.appendChild(li); });
+    $("endCard").appendChild(l);
+  }
+  const row=document.createElement("div"); row.className="row";
+  if(hasWrong){ const b=document.createElement("button"); b.className="btn pink"; b.textContent="Yanlışlara karşı savaş"; b.onclick=()=>start(mode, runWrong.slice()); row.appendChild(b); }
+  const b2=document.createElement("button"); b2.className="btn blue"; b2.textContent="Tekrar oyna"; b2.onclick=()=>start(mode); row.appendChild(b2);
+  const b3=document.createElement("button"); b3.className="btn small"; b3.textContent="Menü"; b3.onclick=()=>{ menuInit(); show("menu"); }; row.appendChild(b3);
+  $("endCard").appendChild(row);
+}
+
+function lose(){
+  finishSave();
+  show("end");
+  $("endCard").innerHTML = "";
+  const h=document.createElement("h2"); h.textContent="Kalpler bitti 💔"; $("endCard").appendChild(h);
+  const p=document.createElement("p"); p.textContent="Sorun değil. Kitaptaki cümleleri bir daha oku, sonra tekrar savaş!"; $("endCard").appendChild(p);
+  const big=document.createElement("div"); big.className="big"; big.textContent="🏆 "+trophies; $("endCard").appendChild(big);
+  const row=document.createElement("div"); row.className="row";
+  const b=document.createElement("button"); b.className="btn"; b.textContent="Tekrar savaş"; b.onclick=()=>start(mode); row.appendChild(b);
+  const b3=document.createElement("button"); b3.className="btn small"; b3.textContent="Menü"; b3.onclick=()=>{ menuInit(); show("menu"); }; row.appendChild(b3);
+  $("endCard").appendChild(row);
+}
+
+/* ---- Soru üretici: kitaptaki kalıplardan rastgele yeni sorular ---- */
+const SAF = [
+  {who:"monkey", ing:"climbing a tree", base:"climb", word:"climbing", src:"It is climbing a tall tree.", pl:false},
+  {who:"elephant", ing:"drinking water", base:"drink", word:"drinking", src:"It is drinking water from the river.", pl:false},
+  {who:"lion", ing:"sleeping under a tree", base:"sleep", word:"sleeping", src:"Shhh… it is sleeping under a tree.", pl:false},
+  {who:"frog", ing:"jumping onto the camera", base:"jump", word:"jumping", src:"It is jumping right onto my camera!", pl:false},
+  {who:"snake", ing:"hiding in the long grass", base:"hide", word:"hiding", src:"It is hiding in the long grass.", pl:false},
+  {who:"birds", ing:"flying home", base:"fly", word:"flying", src:"They are flying home to their nest.", pl:true}
+];
+const JOB = [
+  {job:"vet", does:"helps sick animals", doSrc:"A vet helps sick animals.", base:"help", s:"helps", obj:"sick animals", place:"", placeSrc:"", e:"🩺"},
+  {job:"ranger", does:"protects the forest", doSrc:"A ranger protects the forest and the animals.", base:"protect", s:"protects", obj:"the forest", place:"in the forest", placeSrc:"He walks in the forest every day.", e:"🌲"},
+  {job:"diver", does:"studies the sea", doSrc:"A diver studies the sea.", base:"swim", s:"swims", obj:"in the sea", place:"deep in the sea", placeSrc:"She swims deep down with the turtles and the fish.", e:"🤿"},
+  {job:"pilot", does:"flies over the park", doSrc:"A pilot flies over the park.", base:"fly", s:"flies", obj:"small planes", place:"in the sky", placeSrc:"He flies high in a small plane.", e:"✈️"},
+  {job:"scientist", does:"studies small animals", doSrc:"I study small animals.", base:"study", s:"studies", obj:"tiny bugs", place:"", placeSrc:"", e:"🔬"},
+  {job:"cook", does:"makes food for everyone", doSrc:"I make food for everyone.", base:"make", s:"makes", obj:"food", place:"in the kitchen", placeSrc:"I make food for everyone.", e:"🍳"}
+];
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function others(arr, cur, key, n){ return shuffle(arr.filter(x=>x!==cur).map(x=>x[key])).slice(0,n); }
+function makeQ(){
+  const type = pick(["s1","s2","s3","j1","j2","j3"]);
+  if(type[0]==="s"){
+    const a = pick(SAF);
+    const be = a.pl ? "are" : "is";
+    if(type==="s1"){
+      return {book:"safari", kind:"🎲 Ne yapıyor?", e:a.who==="birds"?"🐦":"🐾",
+        q: (a.pl?"What are the ":"What is the ")+a.who+" doing?",
+        o:[a.ing, ...others(SAF,a,"ing",2)], a:0, src:a.src};
+    }
+    if(type==="s2"){
+      return {book:"safari", kind:"🎲 -ing mi?", e:"🐾",
+        q: (a.pl?"The birds are":"The "+a.who+" is")+" ___.",
+        o:[a.word, a.base, a.base+"s"], a:0, src:a.src};
+    }
+    return {book:"safari", kind:"🎲 is mi, are mı?", e:"🐾",
+      q: (a.pl?"The birds":"The "+a.who)+" ___ "+a.word+".",
+      o:["is","are"], a: a.pl?1:0, src:a.src};
+  }
+  const j = pick(JOB);
+  if(type==="j1"){
+    return {book:"career", kind:"🎲 Ne iş yapar?", e:j.e,
+      q:"What does a "+j.job+" do?",
+      o:[j.does, ...others(JOB,j,"does",2)], a:0, src:j.doSrc};
+  }
+  if(type==="j2"){
+    if(!j.place) return makeQ();
+    return {book:"career", kind:"🎲 Nerede çalışır?", e:j.e,
+      q:"Where does a "+j.job+" work?",
+      o:[j.place, ...others(JOB.filter(x=>x.place),j,"place",2)], a:0, src:j.placeSrc};
+  }
+  return {book:"career", kind:"🎲 -s mi, değil mi?", e:j.e,
+    q:"A "+j.job+" ___ "+j.obj+".",
+    o:[j.s, j.base], a:0, src:j.doSrc};
+}
+function genList(n){
+  const out=[], seen=new Set();
+  let guard=0;
+  while(out.length<n && guard<500){
+    guard++;
+    const q=makeQ();
+    if(seen.has(q.q)) continue;
+    seen.add(q.q); out.push(q);
+  }
+  return out;
+}
+
+menuInit();
+</script>
+</body></html>
