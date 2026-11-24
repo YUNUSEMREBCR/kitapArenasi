@@ -71,6 +71,15 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
 .wlist li{margin-bottom:6px}
 .hidden{display:none!important}
 .mute{position:absolute;top:8px;right:8px}
+.logo{animation:logoPulse 2.6s ease-in-out infinite}
+@keyframes logoPulse{50%{transform:scale(1.05) rotate(-1deg)}}
+.arena{transition:transform .15s,box-shadow .15s}
+.arena:hover{transform:translateY(-3px) rotate(-.4deg)}
+.opt{transition:transform .12s,background .2s}
+.opt:hover:not(:disabled){transform:translateY(-2px)}
+.hearts{display:inline-block}
+.confetti{position:fixed;top:-20px;width:10px;height:14px;border-radius:3px;pointer-events:none;z-index:50;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.9}}
 </style></head>
 <body><div class="wrap">
 
@@ -245,8 +254,23 @@ function finishSave(){
   save("kitap-arena-trophies", String(prev+trophies));
 }
 
+function confetti(){
+  const cols=["#ffd84d","#ff5fa2","#3fd0ff","#7cf0c0","#ff9b3d","#ffffff"];
+  for(let i=0;i<60;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=(Math.random()*100)+"vw";
+    c.style.background=cols[i%cols.length];
+    c.style.animationDuration=(1.8+Math.random()*1.6)+"s";
+    c.style.animationDelay=(Math.random()*0.6)+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4000);
+  }
+}
+
 function win(){
   finishSave();
+  confetti();
   const s = hearts>=3 ? 3 : hearts===2 ? 2 : 1;
   const prevS = Number(load("kitap-arena-stars-"+mode)||0);
   if(s>prevS) save("kitap-arena-stars-"+mode, String(s));
